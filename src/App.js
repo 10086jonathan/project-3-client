@@ -29,10 +29,10 @@ function App() {
               <DashboardPage />
               } />
             <Route exact path="/signup" render={props =>
-              <SignupPage />
+              <SignupPage {...props} />
               } />
             <Route exact path="/login" render={props =>
-              <LoginPage />
+              <LoginPage {...props} />
               } />
           </Switch>
         </main>
