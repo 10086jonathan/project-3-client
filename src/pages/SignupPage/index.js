@@ -1,7 +1,10 @@
 import { useState } from 'react';
+import { signup } from '../../services/userService';
+
 import { Link } from 'react-router-dom';
 
 function SignupPage(props) {
+
     const [formState, setFormState] = useState(getInitialFormState());
 
     function getInitialFormState() {
@@ -20,13 +23,22 @@ function SignupPage(props) {
         }));
     };
 
-    function handleSubmit(event) {
-        event.preventDefault();
-        console.log('submitted form data: ', formState)
-        // todo: make ajax request to sign user
-        setFormState(getInitialFormState());
-        
-        props.history.push('/dashboard');
+    async function handleSubmit(event) {
+        try {
+            event.preventDefault();
+            
+            await signup(formState);
+
+            setFormState(getInitialFormState());
+
+            props.handleSignupOrLogin();
+    
+            props.history.push('/dashboard');
+            
+        } catch (error) {
+            alert(error.message)
+        }
+
     };
 
 

@@ -1,3 +1,7 @@
+import { useState } from 'react';
+
+import { getUser, logout } from './services/userService';
+
 import Footer from './components/Footer'
 import Header from './components/Header'
 
@@ -8,31 +12,47 @@ import SignupPage from './pages/SignupPage';
 
 import './App.css';
 
-import { Route, Switch, Redirect } from 'react-router-dom'
+import { Redirect, Route, Switch, withRouter } from 'react-router-dom'
 
-// create three page components, login, signup, dashboard, home
-// define as a function component and export them
-// have them return a div with the text content of login, signup ... etc
-// import thme into app.js
-// import switch and route from react router and then define the various routes for all pages
+function App(props) {
 
-function App() {
+  const [ userState, setUserState ] = useState({
+    user: getUser()
+  });
+
+  function handleSignupOrLogin() {
+    setUserState({
+      user: getUser()
+    })
+  }
+
+  function handleLogout() {
+    logout();
+
+    setUserState({ user: null });
+    
+    props.history.push('/');
+  }
+
   return (
     <div className="App">
-      <Header />
+      <Header handleLogout={handleLogout} user={userState.user}/>
         <main>
           <Switch>
             <Route exact path="/" render={props =>
               <HomePage />
               } />
             <Route exact path="/dashboard" render={props =>
+              userState.user ?
               <DashboardPage />
+              :
+              <Redirect to="/login" />
               } />
             <Route exact path="/signup" render={props =>
-              <SignupPage {...props} />
+              <SignupPage {...props} handleSignupOrLogin={handleSignupOrLogin}/>
               } />
             <Route exact path="/login" render={props =>
-              <LoginPage {...props} />
+              <LoginPage {...props} handleSignupOrLogin={handleSignupOrLogin}/>
               } />
           </Switch>
         </main>
@@ -41,4 +61,4 @@ function App() {
   );
 }
 
-export default App;
+export default withRouter(App);
